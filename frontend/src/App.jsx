@@ -37,7 +37,14 @@ function App() {
       <div className="app-container">
         {user && (
           <nav className="navbar glass-panel">
-            <div className="nav-brand">Primetrade.ai API</div>
+            <div className="nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+              TaskFlow
+            </div>
             <div className="nav-user">
               <span>{user.name} ({user.role})</span>
               <button onClick={handleLogout} className="btn-secondary">Logout</button>
