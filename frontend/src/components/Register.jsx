@@ -33,15 +33,23 @@ function Register({ onLogin }) {
   }
 
   return (
-    <section className="auth-shell">
-      <aside className="auth-aside citadel-panel">
-        <p className="overline">Recruitment Hall</p>
-        <h2>Assemble your first squad.</h2>
-        <p>Register your command identity, choose your role, and start dispatching operations from one fortified workspace.</p>
+    <section className="auth-shell auth-shell-elevated">
+      <aside className="auth-aside auth-aside-refined citadel-panel">
+        <p className="overline">Recruit Team</p>
+        <h2>Set up your workspace in less than two minutes.</h2>
+        <p>Create your command profile, assign permissions, and start organizing mission flow with role-aware access.</p>
+        <ul className="benefit-list">
+          <li>Role-based dashboard visibility</li>
+          <li>Task lifecycle tracking</li>
+          <li>Live status updates for squads</li>
+        </ul>
       </aside>
 
-      <div className="auth-container citadel-panel">
-        <h2>Create account</h2>
+      <div className="auth-container auth-container-refined citadel-panel">
+        <div className="auth-header">
+          <h2>Create account</h2>
+          <p>Start building your operations board.</p>
+        </div>
         {error && <div className="message error">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -52,7 +60,7 @@ function Register({ onLogin }) {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Elara Thornfield"
+              placeholder="Mara Solenne"
             />
           </div>
           <div className="form-group">
@@ -63,7 +71,7 @@ function Register({ onLogin }) {
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="elara@clan.io"
+              placeholder="mara@unit.co"
             />
           </div>
           <div className="form-group">
@@ -86,7 +94,7 @@ function Register({ onLogin }) {
             </select>
           </div>
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Preparing roster...' : 'Register'}
+            {loading ? 'Creating account...' : 'Register'}
           </button>
         </form>
         <div className="auth-links">

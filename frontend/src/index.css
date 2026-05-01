@@ -129,3 +129,100 @@ button { cursor: pointer; font-family: inherit; transition: transform 0.2s ease,
 @media (max-width: 900px) {
   .auth-shell, .task-list, .skeleton-grid { grid-template-columns: 1fr; }
 }
+
+
+.auth-shell-elevated {
+  grid-template-columns: 1.15fr 0.95fr;
+  gap: 1.2rem;
+}
+
+.auth-aside-refined {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 520px;
+  background: linear-gradient(160deg, rgba(42, 57, 66, 0.92), rgba(18, 24, 29, 0.95));
+}
+
+.auth-aside-refined h2 {
+  font-size: 2.2rem;
+  line-height: 1.1;
+  margin: 0.8rem 0;
+  max-width: 18ch;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 1.6rem;
+}
+
+.metric-item {
+  padding: 0.75rem;
+  border: 1px solid rgba(224, 169, 63, 0.26);
+  border-radius: 12px;
+  background: rgba(20, 27, 32, 0.55);
+  display: grid;
+  gap: 0.3rem;
+}
+
+.metric-item strong {
+  font-size: 1.2rem;
+}
+
+.metric-item span {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.auth-container-refined {
+  padding: 2rem;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-header {
+  margin-bottom: 1.2rem;
+}
+
+.auth-header h2 {
+  font-size: 1.9rem;
+}
+
+.auth-header p {
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+}
+
+.benefit-list {
+  list-style: none;
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.benefit-list li {
+  border: 1px solid rgba(224, 169, 63, 0.22);
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  background: rgba(14, 19, 24, 0.5);
+  color: #d7dfd2;
+}
+
+@media (max-width: 900px) {
+  .auth-shell-elevated {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-aside-refined,
+  .auth-container-refined {
+    min-height: auto;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
