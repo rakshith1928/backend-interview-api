@@ -6,8 +6,6 @@ function Dashboard({ token, user }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  
-  // Form state
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [formData, setFormData] = useState({ title: '', description: '', status: 'pending' })
@@ -21,7 +19,7 @@ function Dashboard({ token, user }) {
     try {
       const res = await taskAPI.getAll()
       setTasks(res.data.data)
-    } catch (err) {
+    } catch {
       setError('Failed to fetch tasks')
     } finally {
       setLoading(false)
@@ -46,10 +44,10 @@ function Dashboard({ token, user }) {
     try {
       if (editingId) {
         await taskAPI.update(editingId, formData)
-        showMessage('Task updated successfully')
+        showMessage('Mission updated successfully')
       } else {
         await taskAPI.create(formData)
-        showMessage('Task created successfully')
+        showMessage('Mission created successfully')
       }
       setFormData({ title: '', description: '', status: 'pending' })
       setShowForm(false)
@@ -67,12 +65,12 @@ function Dashboard({ token, user }) {
   }
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
+    if (window.confirm('Delete this mission record?')) {
       try {
         await taskAPI.delete(id)
-        showMessage('Task deleted successfully')
+        showMessage('Mission deleted successfully')
         fetchTasks()
-      } catch (err) {
+      } catch {
         showMessage('Failed to delete task', true)
       }
     }
@@ -86,22 +84,25 @@ function Dashboard({ token, user }) {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h2>{user.role === 'admin' ? 'All Tasks (Admin View)' : 'My Tasks'}</h2>
+      <header className="dashboard-header">
+        <div>
+          <p className="overline">Mission Ledger</p>
+          <h2>{user.role === 'admin' ? 'All active campaigns' : 'Your assignment queue'}</h2>
+        </div>
         {!showForm && (
-          <button className="btn-primary" style={{ width: 'auto', marginTop: 0 }} onClick={() => setShowForm(true)}>
-            + Create New Task
+          <button className="btn-primary slim" onClick={() => setShowForm(true)}>
+            Create Mission
           </button>
         )}
-      </div>
+      </header>
 
       {error && <div className="message error">{error}</div>}
       {success && <div className="message success">{success}</div>}
 
       {showForm && (
-        <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
-          <h3>{editingId ? 'Edit Task' : 'Create Task'}</h3>
-          <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
+        <div className="citadel-panel mission-form">
+          <h3>{editingId ? 'Edit mission' : 'Create mission'}</h3>
+          <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Title</label>
               <input type="text" name="title" value={formData.title} onChange={handleInputChange} required />
@@ -120,40 +121,42 @@ function Dashboard({ token, user }) {
                 </select>
               </div>
             )}
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button type="submit" className="btn-primary">Save Task</button>
-              <button type="button" className="btn-secondary" style={{ marginTop: '1rem' }} onClick={cancelEdit}>Cancel</button>
+            <div className="task-actions">
+              <button type="submit" className="btn-primary slim">Save</button>
+              <button type="button" className="btn-secondary" onClick={cancelEdit}>Cancel</button>
             </div>
           </form>
         </div>
       )}
 
       {loading ? (
-        <p>Loading tasks...</p>
+        <div className="skeleton-grid">
+          <div className="skeleton-card" />
+          <div className="skeleton-card" />
+        </div>
       ) : tasks.length === 0 ? (
-        <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          No tasks found. Create one to get started!
+        <div className="citadel-panel empty-state">
+          <h3>No missions yet</h3>
+          <p>Launch your first mission to fill this war table with active objectives.</p>
         </div>
       ) : (
         <div className="task-list">
-          {tasks.map(task => (
-            <div key={task._id} className="task-card glass-panel">
+          {tasks.map((task) => (
+            <article key={task._id} className="task-card citadel-panel">
               <div className="task-meta">
                 <span className={`task-status status-${task.status}`}>{task.status.replace('-', ' ')}</span>
                 <span>{new Date(task.createdAt).toLocaleDateString()}</span>
               </div>
-              <h3 className="task-title" style={{ marginTop: '0.5rem' }}>{task.title}</h3>
+              <h3 className="task-title">{task.title}</h3>
               <p className="task-desc">{task.description}</p>
               {user.role === 'admin' && task.user && (
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                  Owner: {task.user.name} ({task.user.email})
-                </div>
+                <p className="task-owner">Owner: {task.user.name} · {task.user.email}</p>
               )}
               <div className="task-actions">
                 <button className="btn-secondary" onClick={() => handleEdit(task)}>Edit</button>
                 <button className="btn-danger" onClick={() => handleDelete(task._id)}>Delete</button>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}
