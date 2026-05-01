@@ -1,6 +1,19 @@
-# Primetrade.ai Backend Developer Intern Assignment
+# TaskFlow
 
-A robust, scalable REST API built with **Node.js, Express, and MongoDB**, paired with a modern **React + Vite** frontend interface. This project was developed to meet the core requirements of the Primetrade.ai Backend Developer Intern assignment, focusing heavily on security, modularity, and deployment readiness.
+A robust, scalable REST API built with **Node.js, Express, and MongoDB**, paired with a modern **React + Vite** frontend interface featuring a premium glassmorphic design. TaskFlow focuses heavily on security, modularity, and deployment readiness, offering a seamless and beautiful task management experience.
+
+---
+
+## 📸 Showcase
+
+<div align="center">
+  <h3>Authentication & Dashboard</h3>
+  <p>A completely customized, responsive light theme featuring dynamic floating labels and SVG iconography.</p>
+  
+  <img src="./login.png" alt="Login Page" width="32%" />
+  <img src="./register.png" alt="Register Page" width="32%" />
+  <img src="./dashboard.png" alt="Dashboard" width="32%" />
+</div>
 
 ---
 
@@ -124,6 +137,3 @@ Designing for the future requires decoupling and statelessness. This architectur
 1. **Horizontal Scaling & Microservices:** Because the authentication layer uses **JWT**, the backend is completely stateless. This means we are not reliant on server memory or sticky sessions. The Express app can be orchestrated via **Kubernetes**. If the `Task` entity grows into a massive service, its routes and controllers can be safely extracted into an independent microservice.
 2. **Caching Strategy:** Currently, every `GET` request hits MongoDB. As read volume scales, we would introduce **Redis** as an in-memory caching layer. Write operations (`POST`, `PUT`, `DELETE`) would invalidate specific Redis cache keys to ensure data consistency, dramatically reducing the load on the primary database.
 3. **Load Balancing & Reverse Proxy:** The Node.js instances are designed to sit behind an **Nginx** reverse proxy (as demonstrated in the Frontend Dockerfile) or an AWS Application Load Balancer (ALB). This provides SSL termination, mitigates DDoS attacks, and distributes incoming traffic evenly across multiple Node instances, ensuring high availability.
-
----
-*Developed for the Primetrade.ai engineering team evaluation.*
