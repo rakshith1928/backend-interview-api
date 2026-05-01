@@ -15,7 +15,7 @@ function Login({ onLogin }) {
     e.preventDefault()
     setLoading(true)
     setError('')
-
+    
     try {
       const res = await authAPI.login(formData)
       setAuthToken(res.data.token)
@@ -28,48 +28,40 @@ function Login({ onLogin }) {
   }
 
   return (
-    <section className="auth-shell">
-      <aside className="auth-aside citadel-panel">
-        <p className="overline">Night Watch</p>
-        <h2>Guard the kingdom queue.</h2>
-        <p>Sign in to review missions, coordinate squads, and keep every objective moving across the valley map.</p>
-      </aside>
-
-      <div className="auth-container citadel-panel">
-        <h2>Enter the war table</h2>
-        {error && <div className="message error">{error}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email Address</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="commander@clan.io"
-            />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              placeholder="Your passphrase"
-            />
-          </div>
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Preparing defenses...' : 'Login'}
-          </button>
-        </form>
-        <div className="auth-links">
-          Need an account? <Link to="/register">Create one now</Link>
+    <div className="auth-container glass-panel">
+      <h2>Welcome Back</h2>
+      {error && <div className="message error">{error}</div>}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Email Address</label>
+          <input 
+            type="email" 
+            name="email" 
+            value={formData.email} 
+            onChange={handleChange} 
+            required 
+            placeholder="Enter your email"
+          />
         </div>
+        <div className="form-group">
+          <label>Password</label>
+          <input 
+            type="password" 
+            name="password" 
+            value={formData.password} 
+            onChange={handleChange} 
+            required 
+            placeholder="Enter your password"
+          />
+        </div>
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+      </form>
+      <div className="auth-links">
+        Don't have an account? <Link to="/register">Register here</Link>
       </div>
-    </section>
+    </div>
   )
 }
 
