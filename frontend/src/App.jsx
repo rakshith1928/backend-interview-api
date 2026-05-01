@@ -35,29 +35,36 @@ function App() {
   return (
     <Router>
       <div className="app-container">
+        <div className="background-overlay" />
         {user && (
-          <nav className="navbar glass-panel">
-            <div className="nav-brand">Primetrade.ai API</div>
+          <nav className="navbar citadel-panel">
+            <div className="nav-brand">
+              <p className="overline">Clan Command</p>
+              <h1>War Table</h1>
+            </div>
             <div className="nav-user">
-              <span>{user.name} ({user.role})</span>
-              <button onClick={handleLogout} className="btn-secondary">Logout</button>
+              <div>
+                <p className="overline">Commander</p>
+                <p>{user.name} · {user.role}</p>
+              </div>
+              <button onClick={handleLogout} className="btn-secondary">Leave Camp</button>
             </div>
           </nav>
         )}
-        
+
         <main className="main-content">
           <Routes>
-            <Route 
-              path="/login" 
-              element={!token ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} 
+            <Route
+              path="/login"
+              element={!token ? <Login onLogin={handleLogin} /> : <Navigate to="/" />}
             />
-            <Route 
-              path="/register" 
-              element={!token ? <Register onLogin={handleLogin} /> : <Navigate to="/" />} 
+            <Route
+              path="/register"
+              element={!token ? <Register onLogin={handleLogin} /> : <Navigate to="/" />}
             />
-            <Route 
-              path="/" 
-              element={token ? <Dashboard token={token} user={user} /> : <Navigate to="/login" />} 
+            <Route
+              path="/"
+              element={token ? <Dashboard token={token} user={user} /> : <Navigate to="/login" />}
             />
           </Routes>
         </main>
