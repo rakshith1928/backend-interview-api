@@ -4,43 +4,78 @@ A robust, scalable REST API built with **Node.js, Express, and MongoDB**, paired
 
 ---
 
-## 🎯 Evaluation Criteria Showcase
+## 🏗 Database Design (MongoDB + Mongoose)
 
-This project is explicitly designed to meet and exceed the assignment's evaluation criteria:
+The application utilizes MongoDB (a NoSQL database) for flexible, high-performance data storage. The schemas are strictly defined using Mongoose to ensure data integrity and validation before database insertion.
 
-### ✅ API Design (REST Principles, Status Codes, Modularity)
-- **RESTful Architecture**: All endpoints follow strict REST principles (e.g., `GET /api/v1/tasks`, `POST /api/v1/tasks`).
-- **Standardized Responses**: Predictable JSON responses utilizing standard HTTP status codes (`200 OK`, `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `500 Server Error`).
-- **Modularity**: The backend follows an MVC-like pattern (`controllers/`, `models/`, `routes/`, `middlewares/`), ensuring separation of concerns. Routes are versioned (`/api/v1/...`) to allow for backwards-compatible future updates.
+### 1. User Schema
+Handles authentication and Role-Based Access Control (RBAC).
+- `name`: String (Required)
+- `email`: String (Required, Unique, Regex Validated)
+- `password`: String (Required, Minimum 6 characters, Hashed via bcryptjs)
+- `role`: String (Enum: `['user', 'admin']`, Default: `'user'`)
+- `createdAt`: Date
 
-### ✅ Database Schema Design & Management
-- **MongoDB & Mongoose**: Utilizes NoSQL for flexible schema design.
-- **Relational Mapping**: The `Task` schema contains a hard reference (`mongoose.Schema.ObjectId`) to the `User` schema, establishing a strict one-to-many relationship.
-- **Data Integrity**: Enforces strict Mongoose validation rules (required fields, enum matching, regex for email validation, and length constraints) at the database level before data is ever saved.
+### 2. Task Schema
+The primary entity managed by the users.
+- `title`: String (Required, Max 100 characters)
+- `description`: String (Required, Max 500 characters)
+- `status`: String (Enum: `['pending', 'in-progress', 'completed']`, Default: `'pending'`)
+- `user`: ObjectId (Hard Reference to the User Schema)
+- `createdAt`: Date
 
-### ✅ Security Practices (JWT, Hashing, Validation)
-- **Stateless Authentication**: Uses JSON Web Tokens (JWT) for secure, stateless session management.
-- **Password Protection**: Passwords are mathematically hashed using `bcryptjs` (with a 10-round salt) before database insertion. Passwords are never returned in API responses (`select: false`).
-- **Role-Based Access Control (RBAC)**: Includes dedicated `protect` and `authorize` middlewares. A `user` can only manipulate their own tasks, while an `admin` role has elevated privileges across the entire dataset.
-
-### ✅ Functional Frontend Integration
-- **React + Vite App**: A single-page application that seamlessly connects to the backend APIs using Axios.
-- **State & Session Management**: Securely handles JWT storage and manages user sessions contextually.
-- **Dynamic UI**: Features a modern, glassmorphic design system to satisfy the need for a rich aesthetic, providing instant user feedback (success/error messaging) during CRUD operations.
-
-### ✅ Scalability & Deployment Readiness
-*(See the [Scalability Note](#-scalability--deployment-note) below for a detailed breakdown).*
+**Relational Mapping:** The `user` field in the Task schema establishes a strict one-to-many relationship, allowing the application to populate task ownership dynamically.
 
 ---
 
-## 🚀 Setup & Installation Instructions
+## 🔒 Security Practices & Authentication
 
-To run this application locally, you will need two separate terminal windows for the backend and frontend.
+- **Stateless Authentication**: Uses JSON Web Tokens (JWT) for secure, stateless session management.
+- **Password Protection**: Passwords are mathematically hashed using `bcryptjs` (with a 10-round salt) before database insertion. Passwords are never returned in API responses.
+- **Role-Based Access Control (RBAC)**: Includes dedicated `protect` and `authorize` middlewares. A standard `user` can only manipulate their own tasks, while an `admin` has elevated privileges across the entire dataset.
+- **Input Validation**: Mongoose handles strict schema validation (e.g., preventing invalid emails or exceedingly long strings).
 
-### 1. Database Configuration
-1. Open `backend/.env`.
-2. Locate the `MONGO_URI` variable.
-3. Replace `<YOUR_PASSWORD>` with the actual database password. *(Note: The `.env` file is intentionally ignored by `.gitignore` to prevent secret leaks in production).*
+---
+
+## 📚 API Documentation & Explanation
+
+The backend follows strict REST principles. Responses utilize standardized HTTP status codes (`200 OK`, `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `500 Server Error`).
+
+### Authentication Endpoints (`/api/v1/auth`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| POST | `/register` | Register a new user | Public |
+| POST | `/login` | Authenticate user & get JWT | Public |
+| GET | `/me` | Get current logged-in user profile | Private |
+
+### Task Endpoints (`/api/v1/tasks`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| GET | `/` | Get all tasks (Admins get all, Users get theirs) | Private |
+| POST | `/` | Create a new task | Private |
+| GET | `/:id` | Get a specific task | Private |
+| PUT | `/:id` | Update a specific task | Private |
+| DELETE | `/:id` | Delete a specific task | Private |
+
+### Swagger UI Integration
+Interactive API documentation is built directly into the application using `swagger-ui-express`. 
+Once the server is running, navigate to: **`http://localhost:5000/api-docs`** to view and test all endpoints dynamically.
+
+---
+
+## 🚀 Local Setup Instructions (Without Docker)
+
+To run this application locally using Node, you will need two separate terminal windows.
+
+### 1. MongoDB Setup
+1. Create a `.env` file in the `backend/` directory.
+2. Add your MongoDB Atlas connection string (or local MongoDB URI) and a JWT Secret:
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/<db-name>?retryWrites=true&w=majority
+JWT_SECRET=your_super_secret_jwt_key_here
+```
+*(Note: If you encounter `querySrv ECONNREFUSED` errors, ensure your current IP address is whitelisted in the MongoDB Atlas Network Access settings).*
 
 ### 2. Running the Backend API
 In your first terminal:
@@ -49,8 +84,7 @@ cd backend
 npm install
 npm run dev
 ```
-- The API will be live at `http://localhost:5000`
-- **Swagger Documentation**: Visit `http://localhost:5000/api-docs` to view and interact with the complete API documentation.
+The API will be live at `http://localhost:5000`.
 
 ### 3. Running the Frontend Dashboard
 In your second terminal:
@@ -59,35 +93,37 @@ cd frontend
 npm install
 npm run dev
 ```
-- The application will be live at `http://localhost:5173`.
+The React application will be live at `http://localhost:5173`.
 
 ---
 
-## 📈 Scalability & Deployment Note
+## 🐳 Docker Deployment Setup
+
+The repository is fully Dockerized for immediate, isolated production deployment. It contains Dockerfiles for both services and a root `docker-compose.yml`. 
+- **Backend:** Containerized in a lightweight Node Alpine environment.
+- **Frontend:** Multi-stage build compiled via Vite and served using a production-grade **Nginx** container.
+
+### Running with Docker Compose
+1. Ensure your `backend/.env` file is configured with your `MONGO_URI`.
+2. From the root directory of the project, run:
+```bash
+docker-compose up --build -d
+```
+3. The services will automatically link and start:
+   - **Frontend:** Available at `http://localhost:80`
+   - **Backend API:** Available at `http://localhost:5000`
+
+To stop the containers, run `docker-compose down`.
+
+---
+
+## 📈 Scalability Note
 
 Designing for the future requires decoupling and statelessness. This architecture is prepared for enterprise-scale traffic:
 
-### 1. Horizontal Scaling & Microservices
-Because the authentication layer uses **JWT**, the backend is completely stateless. This means we are not reliant on server memory or sticky sessions. The Express app can be containerized using **Docker** and orchestrated via **Kubernetes**. If the `Task` entity grows into a massive service, its routes and controllers can be safely extracted into an independent microservice communicating over gRPC or message queues (like RabbitMQ) without breaking the Gateway.
-
-### 2. Caching Strategy
-Currently, every `GET` request hits MongoDB. As read volume scales, we would introduce **Redis** as an in-memory caching layer. 
-- Frequent queries (e.g., an Admin requesting all tasks) would be cached in Redis.
-- Write operations (`POST`, `PUT`, `DELETE`) would invalidate the specific Redis cache keys to ensure data consistency, dramatically reducing the load on the primary MongoDB database.
-
-### 3. Load Balancing & Reverse Proxy
-For deployment readiness, the Node.js instances should sit behind an **Nginx** reverse proxy or an AWS Application Load Balancer (ALB). This provides SSL termination, mitigates DDoS attacks, and distributes incoming traffic evenly across multiple Node instances, ensuring high availability.
-
-### 4. Docker Deployment 🐳
-The repository is fully Dockerized for immediate production deployment. It contains Dockerfiles for both services and a root `docker-compose.yml`. The backend is containerized in a lightweight Node Alpine environment, and the frontend is built and served via a production-grade **Nginx** container.
-
-To spin up the entire application stack with a single command:
-```bash
-# Ensure your MONGO_URI is set in the terminal environment or .env file
-docker-compose up --build -d
-```
-- Frontend will be available on `http://localhost:80`
-- Backend will be available on `http://localhost:5000`
+1. **Horizontal Scaling & Microservices:** Because the authentication layer uses **JWT**, the backend is completely stateless. This means we are not reliant on server memory or sticky sessions. The Express app can be orchestrated via **Kubernetes**. If the `Task` entity grows into a massive service, its routes and controllers can be safely extracted into an independent microservice.
+2. **Caching Strategy:** Currently, every `GET` request hits MongoDB. As read volume scales, we would introduce **Redis** as an in-memory caching layer. Write operations (`POST`, `PUT`, `DELETE`) would invalidate specific Redis cache keys to ensure data consistency, dramatically reducing the load on the primary database.
+3. **Load Balancing & Reverse Proxy:** The Node.js instances are designed to sit behind an **Nginx** reverse proxy (as demonstrated in the Frontend Dockerfile) or an AWS Application Load Balancer (ALB). This provides SSL termination, mitigates DDoS attacks, and distributes incoming traffic evenly across multiple Node instances, ensuring high availability.
 
 ---
 *Developed for the Primetrade.ai engineering team evaluation.*
